@@ -8,6 +8,10 @@ const mongodb = new MongoDB()
 
 app.use(cors())
 
+app.get('/', async (req: Request, res: Response) => {
+  res.send("Hello World")
+})
+
 
 app.get('/names_streets', async (req: Request, res: Response) => {
   const names = await mongodb.Names_Articles()
