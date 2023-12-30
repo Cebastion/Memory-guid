@@ -10,6 +10,7 @@ const Navigation: FC<IActiveArticle> = ({ SetActiveArticle }) => {
   const [ArticleNames, SetArticleNames] = useState<IArticleNames>({ names: [] })
   const [ArticleAll, SetArticleAll] = useState<IArticleAll>({ articles: [] })
   const [activeArticle, setActiveArticle] = useState<string>()
+  const [Loading, SetLoading] = useState<boolean>(false)
 
   async function GetArticle(name: string) {
     const articleService = new ArticleService()
@@ -25,16 +26,23 @@ const Navigation: FC<IActiveArticle> = ({ SetActiveArticle }) => {
       const ArticleAll = await articleService.GetArticleAll()
       SetArticleNames(ArticleNames)
       SetArticleAll(ArticleAll)
+      SetLoading(true)
     })()
   }, [])
 
   return (
     <aside className={style.content__aside}>
-      {ArticleNames.names.map((article) => (
+      {Loading ?
+      ArticleNames.names.map((article) => (
         <div className={`${style.aside__block} ${activeArticle === article.name ? style.active : ''}`} key={article.name} onClick={() => GetArticle(article.name)}>
           <span>{article.name}</span>
         </div>
-      ))}
+      ))
+      :
+      <div className={style.aside__block}>
+          <span>Завантаження...</span>
+        </div>
+      }
     </aside>
   )
 }
