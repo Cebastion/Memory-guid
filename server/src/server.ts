@@ -7,6 +7,7 @@ const PORT = 8800
 const mongodb = new MongoDB()
 
 app.use(cors())
+app.use(express.json())
 
 app.get('/', async (req: Request, res: Response) => {
   res.json("Hello World")
