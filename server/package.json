@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "ts-node server/server.ts",
+    "start": "ts-node src/server.ts",
     "build": "tsc",
     "dev": "ts-node src/server.ts"
   },

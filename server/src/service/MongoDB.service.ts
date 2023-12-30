@@ -36,12 +36,12 @@ export class MongoDB {
   }
 
   private async disconnect() {
-    await mongoose.disconnect()
+    await mongoose.disconnect().then(() => console.log('Disconnect!!!'))
   }
 
   private async connect() {
     try {
-      await mongoose.connect(this.MongooseDB)
+      await mongoose.connect(this.MongooseDB).then(() => console.log('Connect!!!'))
     } catch (error) {
       console.error(`Error connecting to MongoDB: ${error}`)
     }
