@@ -3,7 +3,7 @@ import style from './gallery.module.scss'
 import { IArticle } from '@/interface/Article.interface'
 
 const Gallery: FC<IArticle> = ({ article }) => {
-  const URL = 'http://localhost:8800'
+  const URL = 'https://memory-guid.vercel.app'
 
   return (
     article.text.length <= 6 ?

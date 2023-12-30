@@ -26,7 +26,7 @@ export class MongoDB {
       files.forEach((file, index) => {
         const fileExtension = file.toLowerCase()
         if (fileExtension.endsWith('.webp') || fileExtension.endsWith('.png') || fileExtension.endsWith('.jpg')) {
-          images.push(`/${name}/${subFolder}/${index + 1}`)
+          images.push(`/${name}/${subFolder}/${index}`)
         }
       })
     } catch (error) {

@@ -2,7 +2,7 @@ import axios from 'axios'
 import { IArticle, IArticleAll, IArticleNames } from '@/interface/Article.interface'
 
 export class ArticleService {
-  private URL = 'http://localhost:8800/'
+  private URL = 'https://memory-guid.vercel.app/'
   
   async GetArticleNames(): Promise<IArticleNames> {
     const { data } = await axios.get<IArticleNames>(this.URL + 'names_streets')
