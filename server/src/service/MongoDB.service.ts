@@ -18,22 +18,29 @@ export class MongoDB {
     process.env.URL_DB ||
     'mongodb+srv://UserList:14881488@cluster0.ai3eiek.mongodb.net/article?retryWrites=true&w=majority';
 
-  private async findImages(name: string, subFolder: string): Promise<string[]> {
-    const images: string[] = []
-    const directoryPath = path.resolve(__dirname, '..', 'img', name, subFolder)
-    try {
-      const files = await fsPromises.readdir(directoryPath)
-      files.forEach((file, index) => {
-        const fileExtension = file.toLowerCase()
-        if (fileExtension.endsWith('.webp') || fileExtension.endsWith('.png') || fileExtension.endsWith('.jpg')) {
-          images.push(`/${name}/${subFolder}/${index + 1}`)
-        }
-      })
-    } catch (error) {
-      console.error(`Error reading directory ${directoryPath}: ${error}`)
+    private async findImages(name: string, subFolder: string): Promise<string[]> {
+      const images: string[] = []
+      const directoryPath = path.resolve(__dirname, '..', 'img', name, subFolder)
+      
+      try {
+        const files = await fsPromises.readdir(directoryPath)
+        
+        let currentIndex = 0;
+    
+        files.forEach((file) => {
+          const fileExtension = file.toLowerCase()
+          if (fileExtension.endsWith('.webp') || fileExtension.endsWith('.png') || fileExtension.endsWith('.jpg')) {
+            currentIndex += 1;
+            images.push(`/${name}/${subFolder}/${currentIndex}`);
+          }
+        });
+      } catch (error) {
+        console.error(`Error reading directory ${directoryPath}: ${error}`)
+      }
+      
+      return images;
     }
-    return images
-  }
+    
 
   private async disconnect() {
     await mongoose.disconnect().then(() => console.log('Disconnect!!!'))
