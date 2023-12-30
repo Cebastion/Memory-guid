@@ -9,7 +9,7 @@ const mongodb = new MongoDB()
 app.use(cors())
 
 app.get('/', async (req: Request, res: Response) => {
-  res.send("Hello World")
+  res.json("Hello World")
 })
 
 
