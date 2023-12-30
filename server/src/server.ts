@@ -14,13 +14,13 @@ app.get('/', async (req: Request, res: Response) => {
 
 
 app.get('/names_streets', async (req: Request, res: Response) => {
-  const names = await mongodb.Names_Articles()
-  res.send(names)
+  const names = await mongodb.namesArticles()
+  res.json(names)
 })
 
 app.get('/all_article', async (req: Request, res: Response) => {
-  const articles = await mongodb.Articles()
-  res.send(articles)
+  const articles = await mongodb.articles()
+  res.json(articles)
 })
 
 app.get('/:name_street/:type/:id', (req: Request, res: Response) => {
@@ -36,6 +36,5 @@ app.get('/:name_street/:type/:id', (req: Request, res: Response) => {
 })
 
 app.listen(PORT, async () => {
-  await mongodb.Connect()
   console.log(`http://localhost:${PORT}`)
 })
