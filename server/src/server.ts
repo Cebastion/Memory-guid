@@ -1,0 +1,37 @@
+import cors from 'cors'
+import express, { Request, Response } from 'express'
+import { MongoDB } from './service/MongoDB.service'
+
+const app = express()
+const PORT = 8800
+const mongodb = new MongoDB()
+
+app.use(cors())
+
+
+app.get('/names_streets', async (req: Request, res: Response) => {
+  const names = await mongodb.Names_Articles()
+  res.send(names)
+})
+
+app.get('/all_article', async (req: Request, res: Response) => {
+  const articles = await mongodb.Articles()
+  res.send(articles)
+})
+
+app.get('/:name_street/:type/:id', (req: Request, res: Response) => {
+  const name_street = req.params.name_street
+  const id = req.params.id
+  const type = req.params.type
+  const photo = (__dirname + `/img/${name_street}/${type}/${type}_${id}.webp`)
+  if (!!photo) {
+    res.sendFile(photo)
+  } else {
+    res.send({ error: '404' })
+  }
+})
+
+app.listen(PORT, async () => {
+  await mongodb.Connect()
+  console.log(`http://localhost:${PORT}`)
+})

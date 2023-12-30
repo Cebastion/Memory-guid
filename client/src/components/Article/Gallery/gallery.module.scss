@@ -1,0 +1,20 @@
+.row__img_hero{
+  float: right;
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+  width: 300px;
+  height: 100%;
+}
+
+.img__hero{
+  height: 100%;
+  margin-top: 20px;
+  margin-left: 25px;
+  img{
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+  }
+}

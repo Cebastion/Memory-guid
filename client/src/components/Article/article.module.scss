@@ -1,0 +1,57 @@
+.content__article{
+  margin-left: 30px;
+  background-color: #FFF;
+  padding: 10px;
+  width: 1457px;
+  height: 77%;
+}
+
+.article__container{
+  overflow-y: scroll;
+  height: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+}
+
+.article__title{
+  h2{
+    color: #000;
+font-family: Judson;
+font-size: 48px;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+  }
+}
+
+.article__row{
+  width: 100%;
+}
+
+.row__text{
+  width: 100%;
+}
+
+.text{
+  margin-top: 10px;
+  span {
+    color: #000;
+text-align: justify;
+font-family: Ruda;
+font-size: 18px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+display: block;
+    margin-bottom: 10px;
+  }
+}

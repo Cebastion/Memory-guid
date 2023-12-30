@@ -1,0 +1,35 @@
+.header{
+  background: #FFF;
+  width: 100%;
+  height: 112px;
+}
+
+.header__container{
+  height: 100%;
+  display: flex;
+  width: 98%;
+  margin: 0 auto;
+}
+
+.header__logo{
+  img{
+    object-fit: cover;
+    object-position: center;
+    max-width: 86px;
+    max-height: 106px;
+  }
+}
+
+.header__title {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  h1{
+    color: #000;
+font-family: Rubik Mono One;
+font-size: 43px;
+font-style: normal;
+font-weight: 400;
+line-height: normal;
+  }
+}
