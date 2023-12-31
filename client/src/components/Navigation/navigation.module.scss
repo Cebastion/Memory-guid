@@ -25,7 +25,7 @@
     span{
       color: #FFF;
 font-family: Judson;
-font-size: 32px;
+font-size: calc(12px + 20 * (100vw / 1920));
 font-style: normal;
 font-weight: 700;
 line-height: normal;
@@ -35,7 +35,7 @@ line-height: normal;
   span {
     color: #000;
     font-family: Judson;
-    font-size: 32px;
+    font-size: calc(8px + 20 * (100vw / 1920));
     font-style: normal;
     font-weight: 700;
     line-height: normal;

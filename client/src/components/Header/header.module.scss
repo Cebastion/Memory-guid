@@ -1,18 +1,18 @@
-.header{
+.header {
   background: #FFF;
   width: 100%;
   height: 112px;
 }
 
-.header__container{
+.header__container {
   height: 100%;
   display: flex;
   width: 98%;
   margin: 0 auto;
 }
 
-.header__logo{
-  img{
+.header__logo {
+  img {
     object-fit: cover;
     object-position: center;
     max-width: 86px;
@@ -24,12 +24,13 @@
   margin-left: 20px;
   display: flex;
   align-items: center;
-  h1{
+
+  h1 {
     color: #000;
-font-family: Rubik Mono One;
-font-size: 43px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
+    font-family: Rubik Mono One;
+    font-size: calc(6px + 37 * (100vw / 1920));
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
   }
 }
