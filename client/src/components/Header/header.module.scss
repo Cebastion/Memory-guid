@@ -95,5 +95,10 @@
 }
 
 @media(max-width: 575px){
-  
+  .header__container{
+    justify-content: space-between;
+  }
+  .header__logo{
+    display: none;
+  }
 }

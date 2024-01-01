@@ -75,5 +75,6 @@ line-height: normal;
 @media(max-width: 575px){
   .content__aside, .content__aside.active{
     position: absolute;
+    width: 100%;
   }
 }
