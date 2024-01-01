@@ -4,8 +4,9 @@ import { IArticleAll, IArticleNames } from '@/interface/Article.interface'
 import { ArticleService } from '@/service/Article.service'
 import { FC, useEffect, useState } from 'react'
 import style from './navigation.module.scss'
+import { IActiveBurger } from '@/interface/ActiveBurger.interface'
 
-const Navigation: FC<IActiveArticle> = ({ SetActiveArticle }) => {
+const Navigation: FC<IActiveArticle & IActiveBurger> = ({ SetActiveArticle, Active }) => {
 
   const [ArticleNames, SetArticleNames] = useState<IArticleNames>({ names: [] })
   const [ArticleAll, SetArticleAll] = useState<IArticleAll>({ articles: [] })
@@ -31,15 +32,15 @@ const Navigation: FC<IActiveArticle> = ({ SetActiveArticle }) => {
   }, [])
 
   return (
-    <aside className={style.content__aside}>
+    <aside className={Active ? `${style.content__aside} ${style.active}` : style.content__aside}>
       {Loading ?
-      ArticleNames.names.map((article) => (
-        <div className={`${style.aside__block} ${activeArticle === article.name ? style.active : ''}`} key={article.name} onClick={() => GetArticle(article.name)}>
-          <span>{article.name}</span>
-        </div>
-      ))
-      :
-      <div className={style.aside__block}>
+        ArticleNames.names.map((article) => (
+          <div className={`${style.aside__block} ${activeArticle === article.name ? style.active : ''}`} key={article.name} onClick={() => GetArticle(article.name)}>
+            <span>{article.name}</span>
+          </div>
+        ))
+        :
+        <div className={style.aside__block}>
           <span>Завантаження...</span>
         </div>
       }

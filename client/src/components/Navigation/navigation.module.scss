@@ -1,5 +1,35 @@
 .content__aside {
+  position: relative;
+  left: -100%;
+  transition: 0.5s all;
+  overflow: hidden;
+  width: 0%;
+  height: 77%;
+  background: #FFF;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+
+  &.active{
+    margin-right: 30px;
+    position: relative;
+  left: 0%;
+  overflow: auto;
   width: 600px;
+  }
+}
+
+.content__aside_active{
+  transition: 0.5s all;
   height: 77%;
   background: #FFF;
   overflow-y: scroll;
@@ -39,5 +69,11 @@ line-height: normal;
     font-style: normal;
     font-weight: 700;
     line-height: normal;
+  }
+}
+
+@media(max-width: 575px){
+  .content__aside, .content__aside.active{
+    position: absolute;
   }
 }
