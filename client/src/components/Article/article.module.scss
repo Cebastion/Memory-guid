@@ -106,3 +106,9 @@
   align-items: center;
   justify-content: center;
 }
+
+@media(max-width: 575px){
+  .content__article{
+    height: 100%;
+  }
+}
