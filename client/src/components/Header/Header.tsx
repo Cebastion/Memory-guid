@@ -6,7 +6,7 @@ import style from './header.module.scss'
 
 const Header: FC<IActiveBurger> = ({ Active, SetActive }) => {
   const BreakPoint = 575
-  const [screenWidth, SetScreenWidth] = useState<number>(window.innerWidth)
+  const [screenWidth, SetScreenWidth] = useState<number>(0)
   const [Title, setTitle] = useState<string>('')
 
   const updateScreenWidth = () => {
