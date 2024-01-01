@@ -95,6 +95,9 @@
 }
 
 @media(max-width: 575px){
+  .header{
+    height: 65px;
+  }
   .header__container{
     justify-content: space-between;
   }
