@@ -32,10 +32,10 @@ const Article: FC<IArticle> = ({ article }) => {
             <img src="/logo.webp" alt="logo" />
           </div>
           <div className={`${style.article__title} ${style.welcome}`}>
-            <h2>Ласкаво просимо в Путівник пам’яті вулицями Кам’янського</h2>
+            <h2>Ми раді вітати Вас на нашому сайті!</h2>
           </div>
           <div className={style.article__center}>
-            <span>будь ласка оберіть вулицю</span>
+            <span>Будь ласка, оберіть вулицю</span>
           </div>
         </div>
       </article>

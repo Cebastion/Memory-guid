@@ -23,7 +23,7 @@ const Header: FC<IActiveBurger> = ({ Active, SetActive }) => {
   }, [screenWidth])
 
   useEffect(() => {
-    setTitle(screenWidth > BreakPoint ? 'Путівник пам’яті вулицями Кам’янського' : 'ППВК')
+    setTitle(screenWidth > BreakPoint ? 'Путівник пам‘яті «Вулицями Кам‘янського»' : 'ППВК')
   }, [screenWidth])
 
   return (
