@@ -1,0 +1,33 @@
+.row__img_hero{
+  float: right;
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+  max-width: calc(10px + 250 * (100vw / 1920));
+  height: 100%;
+}
+
+.img__hero{
+  height: 100%;
+  margin-top: 20px;
+  margin-left: 25px;
+  object-fit: cover;
+  object-position: center;
+  img{
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+@media(max-width: 575px){
+  .img__hero{
+    margin-top: 5px;
+    margin-left: 10px;
+    margin-bottom: 5px;
+  }
+  .row__img_hero{
+    margin-left: 0px;
+  }
+}
