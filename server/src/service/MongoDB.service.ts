@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { promises as fsPromises } from 'fs'
+import fs, { promises as fsPromises } from 'fs'
 import mongoose from 'mongoose'
 import path from 'path'
 import {
@@ -41,16 +41,20 @@ export class MongoDB {
     return images
   }
 
-
-  private async CheckAndDownloadImage(name: string, subFolder: string, images: string[]): Promise<void> {
-    const directoryPath = path.resolve(__dirname, '..', 'img', name, subFolder)
-    if(!fsPromises.readdir(directoryPath)){
-      fsPromises.mkdir(directoryPath)
-    }
-    for (let index = 0; index < images.length; index++) {
-      const image = images[index]
-      const imagePath = path.resolve(__dirname, '..', 'img', name, subFolder, `hero_${index}`)
-      fsPromises.writeFile(imagePath, image)
+  private async DeleteFolderAndImage(name: string, subFolder: string): Promise<void> {
+    const directoryPathFull = path.resolve(__dirname, '..', 'img', name, subFolder);
+    const directoryPath = path.resolve(__dirname, '..', 'img', name);
+  
+    try {
+      await fsPromises.rmdir(directoryPathFull, { recursive: true });
+      const parentFolderContents = await fsPromises.readdir(directoryPath);
+      if (parentFolderContents.length === 0) {
+        await fsPromises.rmdir(directoryPath);
+      }
+    } catch (error) {
+      if (error.code !== 'ENOENT') {
+        throw error;
+      }
     }
   }
 
@@ -144,18 +148,6 @@ export class MongoDB {
     try {
       await this.connect()
       await ArticleModule.create({name: article.name, map_url: article.map_url, text: article.text})
-      this.CheckAndDownloadImage(article.name, 'hero', article.image_hero)
-      const img_hero = await this.findImages(article.name, 'hero')
-      const new_article: IArticle = {
-        article: {
-          name: article.name,
-          image_street: [],
-          image_hero: img_hero,
-          map_url: article.map_url,
-          text: article.text
-        }
-      }
-      return new_article
     } finally {
       await this.disconnect()
     }
@@ -165,27 +157,16 @@ export class MongoDB {
     try {
       await this.connect()
       await ArticleModule.updateOne({ name: article.name }, {name: article.name, text: article.text, map_url: article.text})
-      this.CheckAndDownloadImage(article.name, 'hero', article.image_hero)
-      const img_hero = await this.findImages(article.name, 'hero')
-      const new_article: IArticle = {
-        article: {
-          name: article.name,
-          image_street: [],
-          image_hero: img_hero,
-          map_url: article.map_url,
-          text: article.text
-        }
-      }
-      return new_article
     } finally {
       await this.disconnect()
     }
   }
 
-  async DeleteStreet(name: string) {
+  async DeleteStreet({article}: IArticle) {
     try {
       await this.connect()
-      await ArticleModule.deleteOne({ name: name })
+      await ArticleModule.deleteOne({ name: article.name })
+      await this.DeleteFolderAndImage(article.name, 'hero')
     } finally {
       await this.disconnect()
     }

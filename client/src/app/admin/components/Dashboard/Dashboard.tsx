@@ -1,4 +1,4 @@
-import { IArticleAll } from '@/interface/Article.interface'
+import { IArticle, IArticleAll } from '@/interface/Article.interface'
 import { ArticleService } from '@/service/Article.service'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -19,9 +19,10 @@ export default function Dashboard() {
     })()
   }, [])
 
-  const DeleteArticle = (name: string) => {
+  const DeleteArticle = async (article: IArticle) => {
     const adminService = new AdminService()
-    adminService.DeleteArticle(name)
+    const new_article_all = await adminService.DeleteArticle(article)
+    SetArticleAll(new_article_all)
   }
 
   return (
@@ -50,7 +51,7 @@ export default function Dashboard() {
                   <Link href={`/admin/Edit/${article.article.name}`}>
                     <button className={style.articles__article__button__edit}>Редагувати</button>
                   </Link>
-                  <button className={style.articles__article__button__delete} onClick={() => DeleteArticle(article.article.name)}>
+                  <button className={style.articles__article__button__delete} onClick={() => DeleteArticle(article)}>
                     Видалити
                   </button>
                 </div>

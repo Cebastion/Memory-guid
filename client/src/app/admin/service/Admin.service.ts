@@ -16,7 +16,7 @@ class AdminService {
         if (data) {
             return data
         } else {
-            throw new Error(`Article with name ${name} not found`);
+            throw new Error(`Article with name ${name} not found`)
         }
     }
 
@@ -30,8 +30,9 @@ class AdminService {
         return data
     }
 
-    async DeleteArticle(name: string){
-        await axios.post(this.URL + `/delete/${name}`)
+    async DeleteArticle(article: IArticle): Promise<IArticleAll> {
+        const { data } = await axios.post(this.URL + `/delete`, article)
+        return data
     }
 }
 

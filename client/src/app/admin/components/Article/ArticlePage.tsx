@@ -29,7 +29,7 @@ const ArticlePage: FC<IEditArticle> = ({ EditArticle, SetEditArticle }) => {
             <img key={index} src={img.startsWith('blob:') ? img : 'http://localhost:8800' + img} alt="hero" />
           ))}
           <label className={style.add_img}>
-            <input type="file" style={{display: 'none'}} onChange={AddPhoto}/>
+            <input type="file" style={{ display: 'none' }} onChange={AddPhoto} />
             <div className={style.add_img_block}>
               <span>+</span>
             </div>
@@ -44,9 +44,11 @@ const ArticlePage: FC<IEditArticle> = ({ EditArticle, SetEditArticle }) => {
         <label className={style.form__label}>Посилання на карту</label>
         <input className={style.form__input} type="text" value={EditArticle.article.map_url} onChange={(e) => SetEditArticle({ ...EditArticle, article: { ...EditArticle.article, map_url: e.target.value } })} />
       </div>
-      <div className={style.preview__map}>
-        {EditArticle.article.map_url && (<iframe src={EditArticle.article.map_url} width="600" height="450" />)}
-      </div>
+      {EditArticle.article.map_url && (
+        <div className={style.preview__map}>
+          <iframe src={EditArticle.article.map_url} width="600" height="450" />
+        </div>
+      )}
     </form>
   )
 }

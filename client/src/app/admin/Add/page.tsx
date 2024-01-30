@@ -4,6 +4,7 @@ import style from './edit.module.scss'
 import { IArticle } from '@/interface/Article.interface'
 import { ChangeEvent, useState } from 'react'
 import { AdminService } from '../service/Admin.service'
+import axios from 'axios'
 
 export default function Add() {
   const article: IArticle = {
@@ -17,9 +18,12 @@ export default function Add() {
   }
 
   const [Article, SetArticle] = useState<IArticle>(article)
+  const [SelectPhoto, SetSelectPhoto] = useState<File | null>(null)
 
   const AddPhoto = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      const newPhoto = e.target.files[0]
+      console.log(newPhoto)
       SetArticle({
         ...Article,
         article: {
@@ -27,12 +31,30 @@ export default function Add() {
           image_hero: [...Article.article.image_hero, URL.createObjectURL(e.target.files[0])]
         }
       })
+      SetSelectPhoto((prevSelectPhoto) => {
+        console.log('SelectPhoto: ' + newPhoto)
+        return newPhoto
+      })
     }
   }
 
   const AddArticle = async () => {
     const adminService = new AdminService()
-    const article: IArticle = await adminService.AddArticle(Article)
+    try {
+      if (SelectPhoto) {
+        const formData = new FormData()
+        formData.append('images', SelectPhoto)
+
+        await axios.post(`http://localhost:8800/upload/${Article.article.name}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+    const article = await adminService.AddArticle(Article)
     SetArticle(article)
   }
 
@@ -77,9 +99,11 @@ export default function Add() {
             <label className={style.form__label}>Посилання на карту</label>
             <input className={style.form__input} type="text" value={Article.article.map_url} onChange={(e) => SetArticle({ ...Article, article: { ...Article.article, map_url: e.target.value } })} />
           </div>
+          {Article.article.map_url && (
           <div className={style.preview__map}>
-          {Article.article.map_url && (<iframe src={Article.article.map_url} width="600" height="450" />)}
+            <iframe src={Article.article.map_url} width="600" height="450" />
           </div>
+          )}
         </form>
       </main>
     </div>
