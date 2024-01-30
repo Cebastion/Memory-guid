@@ -67,6 +67,24 @@ app.post('/delete', async (req: Request, res: Response) => {
   res.json(articles)
 })
 
+app.post('/delete_img/:folder/:name_img', (req: Request, res: Response) => {
+  const folder = req.params.folder
+  const name_img = req.params.name_img
+  const pathImg = path.join('src', 'img', folder, 'hero', name_img)
+  fs.unlinkSync(pathImg)
+
+  const files = fs.readdirSync(path.join('src', 'img', folder, 'hero'))
+
+  files.forEach((file, index) => {
+    const oldPath = path.join('src', 'img', folder, 'hero', file);
+    const newNumber = index + 1;
+    const newName = `hero_${newNumber}`;
+    const newPath = path.join('src', 'img', folder, 'hero', newName);
+
+    fs.renameSync(oldPath, newPath);
+  })
+})
+
 // GET
 
 app.get('/', async (req: Request, res: Response) => {
