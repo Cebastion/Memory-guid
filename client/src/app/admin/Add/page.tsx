@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import style from './edit.module.scss'
 import { IArticle } from '@/interface/Article.interface'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useState, useEffect } from 'react'
 import { AdminService } from '../service/Admin.service'
 import axios from 'axios'
 
@@ -23,7 +23,6 @@ export default function Add() {
   const AddPhoto = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const newPhoto = e.target.files[0]
-      console.log(newPhoto)
       SetArticle({
         ...Article,
         article: {
@@ -32,7 +31,6 @@ export default function Add() {
         }
       })
       SetSelectPhoto((prevSelectPhoto) => {
-        console.log('SelectPhoto: ' + newPhoto)
         return newPhoto
       })
     }
@@ -43,7 +41,7 @@ export default function Add() {
     try {
       if (SelectPhoto) {
         const formData = new FormData()
-        formData.append('images', SelectPhoto)
+        formData.append(`images`, SelectPhoto);
 
         await axios.post(`http://localhost:8800/upload/${Article.article.name}`, formData, {
           headers: {
@@ -56,6 +54,17 @@ export default function Add() {
     }
     const article = await adminService.AddArticle(Article)
     SetArticle(article)
+  }
+
+  const DeletePhoto = (indexToRemove: number) => {
+    SetArticle((prevArticle) => ({
+      ...prevArticle,
+      article: {
+        ...prevArticle.article,
+        image_hero: prevArticle.article.image_hero.filter((_, index) => index !== indexToRemove),
+      },
+    }));
+    SetSelectPhoto(null);
   }
 
   return (
@@ -81,7 +90,10 @@ export default function Add() {
             <label className={style.form__label}>Картинки</label>
             <div className={style.form__row}>
               {Article.article.image_hero && Article.article.image_hero.map((img, index) => (
-                <img key={index} src={img.startsWith('blob:') ? img : 'http://localhost:8800' + img} alt="hero" />
+                <div key={index} className={style.img_blur} onClick={() => DeletePhoto(index)}>
+                  <span>X</span>
+                  <img src={img.startsWith('blob:') ? img : 'http://localhost:8800' + img} alt="hero" />
+                </div>
               ))}
               <label className={style.add_img}>
                 <input type="file" style={{ display: 'none' }} onChange={AddPhoto} />
@@ -100,9 +112,9 @@ export default function Add() {
             <input className={style.form__input} type="text" value={Article.article.map_url} onChange={(e) => SetArticle({ ...Article, article: { ...Article.article, map_url: e.target.value } })} />
           </div>
           {Article.article.map_url && (
-          <div className={style.preview__map}>
-            <iframe src={Article.article.map_url} width="600" height="450" />
-          </div>
+            <div className={style.preview__map}>
+              <iframe src={Article.article.map_url} width="600" height="450" />
+            </div>
           )}
         </form>
       </main>

@@ -25,20 +25,26 @@ const storage = multer.diskStorage({
     cb(null, dir)
   },
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname)
-    if (ext !== '.png') {
-      return cb(new Error('Only png files are allowed'), null)
-    }
+    const folderName = req.params.folder
+    const files = fs.readdirSync(path.join('src', 'img', folderName, 'hero'))
+    if (files.length === 0) {
+      const ext = path.extname(file.originalname)
 
-    fileCounter++
-    const filename = `hero_${fileCounter}${ext}`
-    cb(null, filename)
+      fileCounter++
+      const filename = `hero_${fileCounter}${ext}`
+      cb(null, filename)
+    } else {
+      const ext = path.extname(file.originalname)
+
+      const filename = `hero_${files.length + 1}${ext}`
+      cb(null, filename)
+    }
   },
 })
 
 const upload = multer({ storage: storage })
 
-app.post('/upload/:folder', upload.array('images', 2), (req, res) => {
+app.post('/upload/:folder', upload.array('images'), (req: Request, res: Response) => {
   if (!req.files || req.files.length === 0) {
     console.log('error')
     return res.status(400).send('No files uploaded.')
@@ -70,19 +76,37 @@ app.post('/delete', async (req: Request, res: Response) => {
 app.post('/delete_img/:folder/:name_img', (req: Request, res: Response) => {
   const folder = req.params.folder
   const name_img = req.params.name_img
-  const pathImg = path.join('src', 'img', folder, 'hero', name_img)
+  const supportedFormats = ['webp', 'png', 'jpg']
+  const files = fs.readdirSync(path.join('src', 'img', folder, 'hero'))
+  const file = files.find(name => {
+    for (const format of supportedFormats) {
+      if (name.endsWith(`.${format}`) && name.split(`.${format}`)[0] === name_img) {
+        return true;
+      }
+    }
+    return false;
+  });
+  const pathImg = path.join('src', 'img', folder, 'hero', file)
   fs.unlinkSync(pathImg)
 
-  const files = fs.readdirSync(path.join('src', 'img', folder, 'hero'))
+  const files_new = fs.readdirSync(path.join('src', 'img', folder, 'hero'))
 
-  files.forEach((file, index) => {
-    const oldPath = path.join('src', 'img', folder, 'hero', file);
-    const newNumber = index + 1;
-    const newName = `hero_${newNumber}`;
-    const newPath = path.join('src', 'img', folder, 'hero', newName);
+  if (files_new.length > 0) {
+    files_new.forEach((file, index) => {
+      const oldPath = path.join('src', 'img', folder, 'hero', file);
+      const fileExtension = path.extname(file);
+  
+      const newNumber = index + 1;
+      const newName = `hero_${newNumber}${fileExtension}`;
+      const newPath = path.join('src', 'img', folder, 'hero', newName);
+  
+      fs.renameSync(oldPath, newPath);
+    });
 
-    fs.renameSync(oldPath, newPath);
-  })
+    res.status(200)
+  } else {
+    res.status(200)
+  }
 })
 
 // GET

@@ -156,7 +156,7 @@ export class MongoDB {
   async EditStreet({article}: IArticle) {
     try {
       await this.connect()
-      await ArticleModule.updateOne({ name: article.name }, {name: article.name, text: article.text, map_url: article.text})
+      await ArticleModule.updateOne({ name: article.name }, {name: article.name, text: article.text, map_url: article.map_url})
     } finally {
       await this.disconnect()
     }
