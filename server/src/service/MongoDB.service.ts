@@ -18,44 +18,39 @@ export class MongoDB {
     process.env.URL_DB ||
     'mongodb+srv://UserList:14881488@cluster0.ai3eiek.mongodb.net/article?retryWrites=true&w=majority';
 
-  private async findImages(name: string, subFolder: string): Promise<string[]> {
-    const images: string[] = []
-    const directoryPath = path.resolve(__dirname, '..', 'img', name, subFolder)
-
-    try {
-      const files = await fsPromises.readdir(directoryPath)
-
-      let currentIndex = 0
-
-      files.forEach((file) => {
-        const fileExtension = file.toLowerCase()
-        if (fileExtension.endsWith('.webp') || fileExtension.endsWith('.png') || fileExtension.endsWith('.jpg')) {
-          currentIndex += 1
-          images.push(`/${name}/${subFolder}/${currentIndex}`)
-        }
-      })
-    } catch (error) {
-      console.error(`Error reading directory ${directoryPath}: ${error}`)
+  private findImg(_id: string): string {
+    const supportedFormats = ['webp', 'png', 'jpg']
+    const dir = path.join('src', 'images');
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
 
-    return images
+    const files = fs.readdirSync(dir);
+    const file = files.find(name => {
+      for (const format of supportedFormats) {
+        if (name.endsWith(`.${format}`) && name.split(`.${format}`)[0] === _id) {
+          return true;
+        }
+      }
+      return false;
+    })
+
+    return file as string;
   }
 
-  private async DeleteFolderAndImage(name: string, subFolder: string): Promise<void> {
-    const directoryPathFull = path.resolve(__dirname, '..', 'img', name, subFolder);
-    const directoryPath = path.resolve(__dirname, '..', 'img', name);
-  
-    try {
-      await fsPromises.rmdir(directoryPathFull, { recursive: true });
-      const parentFolderContents = await fsPromises.readdir(directoryPath);
-      if (parentFolderContents.length === 0) {
-        await fsPromises.rmdir(directoryPath);
+  private async DeleteImage(_id: string): Promise<void> {
+    const supportedFormats = ['webp', 'png', 'jpg']
+    const files = fs.readdirSync(path.join('src', 'images'))
+    const file = files.find(name => {
+      for (const format of supportedFormats) {
+        if (name.endsWith(`.${format}`) && name.split(`.${format}`)[0] === _id) {
+          return true;
+        }
       }
-    } catch (error) {
-      if (error.code !== 'ENOENT') {
-        throw error;
-      }
-    }
+      return false;
+    });
+    const pathImg = path.join('src', 'images', file)
+    fs.unlinkSync(pathImg)
   }
 
 
@@ -78,14 +73,13 @@ export class MongoDB {
       const article_all: IArticleAll = {
         articles: await Promise.all(
           articles.map(async (element) => {
-            const [imageStreet, imageHero] = await Promise.all([
-              this.findImages(element.name, 'street'),
-              this.findImages(element.name, 'hero'),
+            const imageHero = await Promise.all([
+              this.findImages(element._id),
             ])
             return {
               article: {
+                _id: element._id,
                 name: element.name,
-                image_street: imageStreet,
                 image_hero: imageHero,
                 map_url: element.map_url,
                 text: element.text,
@@ -100,23 +94,23 @@ export class MongoDB {
     }
   }
 
-  async article(name: string): Promise<IArticle> {
+  async article(_id: string): Promise<IArticle> {
     try {
       await this.connect()
 
       const [article_part, imageHero] = await Promise.all([
-        ArticleModule.findOne({ name: name }),
-        this.findImages(name, 'hero')
+        ArticleModule.findOne({ _id: _id }),
+        this.findImages(_id)
       ])
 
       if (!article_part) {
-        throw new Error(`Article not found with name: ${name}`)
+        throw new Error(`Article not found with name: ${_id}`)
       }
 
       const article: IArticle = {
         article: {
+          _id: article_part._id,
           name: article_part.name,
-          image_street: [],
           image_hero: imageHero,
           map_url: article_part.map_url,
           text: article_part.text
@@ -144,29 +138,29 @@ export class MongoDB {
     }
   }
 
-  async AddStreet({article}: IArticle) {
+  async AddStreet({ article }: IArticle) {
     try {
       await this.connect()
-      await ArticleModule.create({name: article.name, map_url: article.map_url, text: article.text})
+      await ArticleModule.create({ _id: article._id, name: article.name, map_url: article.map_url, text: article.text })
     } finally {
       await this.disconnect()
     }
   }
 
-  async EditStreet({article}: IArticle) {
+  async EditStreet({ article }: IArticle) {
     try {
       await this.connect()
-      await ArticleModule.updateOne({ name: article.name }, {name: article.name, text: article.text, map_url: article.map_url})
+      await ArticleModule.updateOne({ _id: article._id }, { name: article.name, text: article.text, map_url: article.map_url })
     } finally {
       await this.disconnect()
     }
   }
 
-  async DeleteStreet({article}: IArticle) {
+  async DeleteStreet({ article }: IArticle) {
     try {
       await this.connect()
-      await ArticleModule.deleteOne({ name: article.name })
-      await this.DeleteFolderAndImage(article.name, 'hero')
+      await ArticleModule.deleteOne({ _id: article._id })
+      await this.DeleteImage(article._id)
     } finally {
       await this.disconnect()
     }

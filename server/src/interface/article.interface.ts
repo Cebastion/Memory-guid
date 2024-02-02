@@ -1,5 +1,6 @@
 export interface IArticle {
   article: {
+    _id: string
     name: string
     image_street: string[]
     image_hero: string[]
@@ -21,6 +22,7 @@ export interface IArticleNames {
 }
 
 export interface IArticleSchema extends Document {
+  _id: string
   name: string
   map_url: string
   text: string[]
