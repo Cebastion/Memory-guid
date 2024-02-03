@@ -10,9 +10,8 @@ class AdminService {
         return data
     }
 
-    async GetArticle(name: string): Promise<IArticle> {
-        console.log(name)
-        const { data } = await axios.get<IArticle>(this.URL + `/name_street/${name}`)
+    async GetArticle(_id: string): Promise<IArticle> {
+        const { data } = await axios.get<IArticle>(this.URL + `/street/${_id}`)
         if (data) {
             return data
         } else {
@@ -21,12 +20,12 @@ class AdminService {
     }
 
     async SaveEditArticle(article_edit: IArticle) {
-        const { data } = await axios.post(this.URL + `/edit`, article_edit)
+        const { data } = await axios.post(this.URL + `/edit/${article_edit.article._id}`, article_edit)
         return data
     }
 
     async AddArticle(article: IArticle) {
-        const { data } = await axios.post(this.URL + `/add`, article)
+        const { data } = await axios.post(this.URL + `/add/${article.article._id}`, article)
         return data
     }
 

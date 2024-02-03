@@ -9,6 +9,7 @@ import axios from 'axios'
 export default function page({ params }: { params: { name: string } }) {
   const article: IArticle = {
     article: {
+      _id: '',
       name: '',
       image_street: [],
       image_hero: [],
@@ -74,7 +75,7 @@ export default function page({ params }: { params: { name: string } }) {
   }, [SelectPhoto])
 
   const DeletePhoto = (indexToRemove: number) => {
-    axios.post(`http://localhost:8800/delete_img/${EditArticle.article.name}/hero_${indexToRemove + 1}`)
+    axios.post(`http://localhost:8800/delete_img/${indexToRemove}`)
       .then((res) => {
         if (res.status === 200) {
           SetEditArticle((prevArticle) => ({
@@ -116,7 +117,7 @@ export default function page({ params }: { params: { name: string } }) {
               <label className={style.form__label}>Картинки</label>
               <div className={style.form__row}>
                 {EditArticle.article.image_hero && EditArticle.article.image_hero.map((img, index) => (
-                  <div key={index} className={style.img_blur} onClick={() => DeletePhoto(index)}>
+                  <div key={index} className={style.img_blur} onClick={() => DeletePhoto(EditArticle.article._id)}>
                     <span>X</span>
                     <img src={img.startsWith('blob:') ? img : 'http://localhost:8800' + img} alt="hero" />
                   </div>
