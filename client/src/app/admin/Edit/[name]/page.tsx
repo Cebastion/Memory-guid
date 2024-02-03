@@ -22,14 +22,17 @@ export default function page({ params }: { params: { name: string } }) {
   const [SelectPhoto, SetSelectPhoto] = useState<File | null>(null)
 
   const SaveEditArticle = async () => {
-    const adminService = new AdminService()
-
     try {
       if (SelectPhoto) {
         const formData = new FormData()
-          formData.append(`images`, SelectPhoto)
+        const _id = randomBytes(12).toString('hex')
+        const formData = new FormData()
+        formData.append(`images`, SelectPhoto);
+        formData.append(`_id`, _id)
+        formData.append('name', Article.article.name)
+        formData.append('map_url', Article.article.map_url)
 
-        await axios.post(`http://localhost:8800/upload/${EditArticle.article.name}`, formData, {
+        await axios.post(`http://localhost:8800/edit/${EditArticle.article._id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -38,9 +41,6 @@ export default function page({ params }: { params: { name: string } }) {
     } catch (error) {
       console.log(error)
     }
-
-    const article: IArticle = await adminService.SaveEditArticle(EditArticle)
-    SetEditArticle(article)
   }
 
   const GetArticle = async () => {
@@ -55,7 +55,7 @@ export default function page({ params }: { params: { name: string } }) {
 
 
   const AddPhoto = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
+    if (e.target.files) {
       const newPhoto = e.target.files[0]
       SetEditArticle({
         ...EditArticle,

@@ -3,7 +3,7 @@ import style from './gallery.module.scss'
 import { IArticle } from '@/interface/Article.interface'
 
 const Gallery: FC<IArticle> = ({ article }) => {
-  const URL = 'https://memory-guid.vercel.app/'
+  const URL = 'https://memory-guid.vercel.app/image/'
 
   return (
     <div className={style.row__img_hero}>

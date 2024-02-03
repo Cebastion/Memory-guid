@@ -74,7 +74,7 @@ export class MongoDB {
         articles: await Promise.all(
           articles.map(async (element) => {
             const imageHero = await Promise.all([
-              this.findImages(element._id),
+              this.findImg(element._id),
             ])
             return {
               article: {
@@ -100,7 +100,7 @@ export class MongoDB {
 
       const [article_part, imageHero] = await Promise.all([
         ArticleModule.findOne({ _id: _id }),
-        this.findImages(_id)
+        this.findImg(_id)
       ])
 
       if (!article_part) {

@@ -3,7 +3,6 @@ import Link from 'next/link'
 import style from './edit.module.scss'
 import { IArticle } from '@/interface/Article.interface'
 import { ChangeEvent, useState, useEffect } from 'react'
-import { AdminService } from '../service/Admin.service'
 import axios from 'axios'
 
 export default function Add() {
@@ -21,7 +20,7 @@ export default function Add() {
   const [SelectPhoto, SetSelectPhoto] = useState<File | null>(null)
 
   const AddPhoto = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
+    if (e.target.files) {
       const newPhoto = e.target.files[0]
       SetArticle({
         ...Article,
@@ -37,13 +36,16 @@ export default function Add() {
   }
 
   const AddArticle = async () => {
-    const adminService = new AdminService()
     try {
       if (SelectPhoto) {
+        const _id = randomBytes(12).toString('hex')
         const formData = new FormData()
         formData.append(`images`, SelectPhoto);
+        formData.append(`_id`, _id)
+        formData.append('name', Article.article.name)
+        formData.append('map_url', Article.article.map_url)
 
-        await axios.post(`http://localhost:8800/upload/${Article.article.name}`, formData, {
+        await axios.post(`http://localhost:8800/add/${Article.article._id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -52,8 +54,6 @@ export default function Add() {
     } catch (error) {
       console.log(error)
     }
-    const article = await adminService.AddArticle(Article)
-    SetArticle(article)
   }
 
   const DeletePhoto = (indexToRemove: number) => {
