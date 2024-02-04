@@ -10,9 +10,9 @@ const Main: FC<IActiveBurger> = ({Active, SetActive}) => {
   const [ActiveArticle, SetActiveArticle] = useState<IArticle>(
     {
       article: {
+        _id: '',
         name: '',
-        image_street: [],
-        image_hero: [],
+        image_hero: '',
         map_url: '',
         text: [],
       }
