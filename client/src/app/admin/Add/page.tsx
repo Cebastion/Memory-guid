@@ -2,69 +2,55 @@
 import Link from 'next/link'
 import style from './edit.module.scss'
 import { IArticle } from '@/interface/Article.interface'
-import { ChangeEvent, useState, useEffect } from 'react'
+import { ChangeEvent, useState } from 'react'
+import { randomBytes } from 'crypto'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 export default function Add() {
   const article: IArticle = {
     article: {
+      _id: '',
       name: '',
-      image_street: [],
-      image_hero: [],
+      image_hero: '',
       map_url: '',
       text: []
     }
   }
 
   const [Article, SetArticle] = useState<IArticle>(article)
-  const [SelectPhoto, SetSelectPhoto] = useState<File | null>(null)
+  const [Preview, SetPreview] = useState<string>('')
+  const [Photo, SetPhoto] = useState<File | null>(null)
+  const router = useRouter()
 
-  const AddPhoto = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newPhoto = e.target.files[0]
-      SetArticle({
-        ...Article,
-        article: {
-          ...Article.article,
-          image_hero: [...Article.article.image_hero, URL.createObjectURL(e.target.files[0])]
-        }
-      })
-      SetSelectPhoto((prevSelectPhoto) => {
-        return newPhoto
-      })
+  const PreviewPhoto = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      SetPreview(URL.createObjectURL(e.target.files[0]))
+      SetPhoto(e.target.files[0])
     }
   }
 
   const AddArticle = async () => {
     try {
-      if (SelectPhoto) {
+      if (Photo) {
         const _id = randomBytes(12).toString('hex')
         const formData = new FormData()
-        formData.append(`images`, SelectPhoto);
+        formData.append(`image`, Photo)
         formData.append(`_id`, _id)
         formData.append('name', Article.article.name)
+        Article.article.text.map((el, index) => {
+          formData.append(`text[${index}]`, el)
+        })
         formData.append('map_url', Article.article.map_url)
 
-        await axios.post(`http://localhost:8800/add/${Article.article._id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+        axios.post(`https://memory-guid-server.vercel.app/add/?_id=${_id}`, formData).then(res => {
+          if (res.data === "Successfully")
+            router.push('/admin')
         })
       }
     } catch (error) {
       console.log(error)
     }
-  }
-
-  const DeletePhoto = (indexToRemove: number) => {
-    SetArticle((prevArticle) => ({
-      ...prevArticle,
-      article: {
-        ...prevArticle.article,
-        image_hero: prevArticle.article.image_hero.filter((_, index) => index !== indexToRemove),
-      },
-    }));
-    SetSelectPhoto(null);
   }
 
   return (
@@ -89,16 +75,9 @@ export default function Add() {
           <div className={style.form__group}>
             <label className={style.form__label}>Картинки</label>
             <div className={style.form__row}>
-              {Article.article.image_hero && Article.article.image_hero.map((img, index) => (
-                <div key={index} className={style.img_blur} onClick={() => DeletePhoto(index)}>
-                  <span>X</span>
-                  <img src={img.startsWith('blob:') ? img : 'http://localhost:8800' + img} alt="hero" />
-                </div>
-              ))}
               <label className={style.add_img}>
-                <input type="file" style={{ display: 'none' }} onChange={AddPhoto} />
-                <div className={style.add_img_block}>
-                  <span>+</span>
+                <input type="file" style={{ display: 'none' }} onChange={PreviewPhoto} />
+                <div className={style.add_img_block} style={{ backgroundImage: `url(${Preview ? Preview : `https://memory-guid-server.vercel.app/image/${Article.article._id}`})` }}>
                 </div>
               </label>
             </div>

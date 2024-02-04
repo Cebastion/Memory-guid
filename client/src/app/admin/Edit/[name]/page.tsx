@@ -1,41 +1,56 @@
 'use client'
 import { IArticle } from '@/interface/Article.interface'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { AdminService } from '../../service/Admin.service'
 import style from './edit.module.scss'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 
 export default function page({ params }: { params: { name: string } }) {
   const article: IArticle = {
     article: {
       _id: '',
       name: '',
-      image_street: [],
-      image_hero: [],
+      image_hero: '',
       map_url: '',
       text: []
     }
   }
 
   const [EditArticle, SetEditArticle] = useState<IArticle>(article)
-  const [SelectPhoto, SetSelectPhoto] = useState<File | null>(null)
+  const [Preview, SetPreview] = useState<string>('')
+  const [Photo, SetPhoto] = useState<File | null>(null)
+  const router = useRouter() 
 
   const SaveEditArticle = async () => {
     try {
-      if (SelectPhoto) {
+      if (Photo && !!Photo) {
         const formData = new FormData()
-        const _id = randomBytes(12).toString('hex')
-        const formData = new FormData()
-        formData.append(`images`, SelectPhoto);
-        formData.append(`_id`, _id)
-        formData.append('name', Article.article.name)
-        formData.append('map_url', Article.article.map_url)
+        formData.append(`image`, Photo)
+        formData.append(`_id`, EditArticle.article._id)
+        formData.append('name', EditArticle.article.name)
+        EditArticle.article.text.map((el, index) => {
+          formData.append(`text[${index}]`, el)
+        })
+        formData.append('map_url', EditArticle.article.map_url)
 
-        await axios.post(`http://localhost:8800/edit/${EditArticle.article._id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+        axios.post(`https://memory-guid-server.vercel.app/edit/?_id=${EditArticle.article._id}`, formData).then(res => {
+          if(res.data === "Successfully")
+            router.push('/admin')
+        })
+      } else {
+        const formData = new FormData()
+        formData.append(`_id`, EditArticle.article._id)
+        formData.append('name', EditArticle.article.name)
+        EditArticle.article.text.map((el, index) => {
+          formData.append(`text[${index}]`, el)
+        })
+        formData.append('map_url', EditArticle.article.map_url)
+
+        axios.post(`https://memory-guid-server.vercel.app/edit`, formData).then(res => {
+          if(res.data === "Successfully")
+            router.push('/admin')
         })
       }
     } catch (error) {
@@ -54,43 +69,11 @@ export default function page({ params }: { params: { name: string } }) {
   }, [])
 
 
-  const AddPhoto = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const newPhoto = e.target.files[0]
-      SetEditArticle({
-        ...EditArticle,
-        article: {
-          ...EditArticle.article,
-          image_hero: [...EditArticle.article.image_hero, URL.createObjectURL(e.target.files[0])]
-        }
-      })
-      SetSelectPhoto((prevSelectPhoto) => {
-        return newPhoto
-      })
+  const PreviewPhoto = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      SetPreview(URL.createObjectURL(e.target.files[0]))
+      SetPhoto(e.target.files[0])
     }
-  }
-
-  useEffect(() => {
-    console.log(SelectPhoto);
-  }, [SelectPhoto])
-
-  const DeletePhoto = (indexToRemove: number) => {
-    axios.post(`http://localhost:8800/delete_img/${indexToRemove}`)
-      .then((res) => {
-        if (res.status === 200) {
-          SetEditArticle((prevArticle) => ({
-            ...prevArticle,
-            article: {
-              ...prevArticle.article,
-              image_hero: prevArticle.article.image_hero.filter((_, index) => index !== indexToRemove),
-            },
-          }))
-          SetSelectPhoto(null)
-        }
-      })
-      .catch(error => {
-        console.error('Ошибка при отправке запроса:', error)
-      })
   }
 
   return (
@@ -116,16 +99,9 @@ export default function page({ params }: { params: { name: string } }) {
             <div className={style.form__group}>
               <label className={style.form__label}>Картинки</label>
               <div className={style.form__row}>
-                {EditArticle.article.image_hero && EditArticle.article.image_hero.map((img, index) => (
-                  <div key={index} className={style.img_blur} onClick={() => DeletePhoto(EditArticle.article._id)}>
-                    <span>X</span>
-                    <img src={img.startsWith('blob:') ? img : 'http://localhost:8800' + img} alt="hero" />
-                  </div>
-                ))}
                 <label className={style.add_img}>
-                  <input type="file" style={{ display: 'none' }} onChange={AddPhoto} />
-                  <div className={style.add_img_block}>
-                    <span>+</span>
+                  <input type="file" style={{ display: 'none' }} onChange={PreviewPhoto} />
+                  <div className={style.add_img_block} style={{ backgroundImage: `url(${Preview ? Preview : `https://memory-guid-server.vercel.app/${EditArticle.article._id}`})` }}>
                   </div>
                 </label>
               </div>

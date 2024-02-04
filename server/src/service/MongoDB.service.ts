@@ -19,7 +19,7 @@ export class MongoDB {
     'mongodb+srv://UserList:14881488@cluster0.ai3eiek.mongodb.net/article?retryWrites=true&w=majority';
 
   private findImg(_id: string): string {
-    const supportedFormats = ['webp', 'png', 'jpg']
+    const supportedFormats = ['webp', 'png', 'jpg', 'jpeg']
     const dir = path.join('src', 'images');
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -39,7 +39,7 @@ export class MongoDB {
   }
 
   private async DeleteImage(_id: string): Promise<void> {
-    const supportedFormats = ['webp', 'png', 'jpg']
+    const supportedFormats = ['webp', 'png', 'jpg', 'jpeg']
     const files = fs.readdirSync(path.join('src', 'images'))
     const file = files.find(name => {
       for (const format of supportedFormats) {
@@ -50,17 +50,18 @@ export class MongoDB {
       return false;
     });
     const pathImg = path.join('src', 'images', file)
+    console.log(pathImg)
     fs.unlinkSync(pathImg)
   }
 
 
-  private async disconnect() {
-    await mongoose.disconnect()
+  async disconnect() {
+    await mongoose.disconnect().then(() => console.log("Disconnected"))
   }
 
-  private async connect() {
+  async connect() {
     try {
-      await mongoose.connect(this.MongooseDB)
+      await mongoose.connect(this.MongooseDB).then(() => console.log("Connected"))
     } catch (error) {
       console.error(`Error connecting to MongoDB: ${error}`)
     }
@@ -68,14 +69,12 @@ export class MongoDB {
 
   async articles(): Promise<IArticleAll> {
     try {
-      await this.connect()
+      
       const articles: IArticleSchema[] = await ArticleModule.find()
       const article_all: IArticleAll = {
         articles: await Promise.all(
           articles.map(async (element) => {
-            const imageHero = await Promise.all([
-              this.findImg(element._id),
-            ])
+            const imageHero = this.findImg(element._id)
             return {
               article: {
                 _id: element._id,
@@ -89,23 +88,23 @@ export class MongoDB {
         ),
       }
       return article_all
-    } finally {
-      await this.disconnect()
+    } catch (error) {
+      console.log(error)
     }
   }
 
-  async article(_id: string): Promise<IArticle> {
+  async article(name: string): Promise<IArticle> {
     try {
-      await this.connect()
+      
 
-      const [article_part, imageHero] = await Promise.all([
-        ArticleModule.findOne({ _id: _id }),
-        this.findImg(_id)
+      const [article_part] = await Promise.all([
+        ArticleModule.findOne({ name: name })
       ])
 
       if (!article_part) {
-        throw new Error(`Article not found with name: ${_id}`)
+        throw new Error(`Article not found with name: ${name}`)
       }
+      const imageHero = this.findImg(article_part._id)
 
       const article: IArticle = {
         article: {
@@ -118,8 +117,8 @@ export class MongoDB {
       }
 
       return article
-    } finally {
-      await this.disconnect()
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -127,42 +126,39 @@ export class MongoDB {
 
   async namesArticles(): Promise<IArticleNames> {
     try {
-      await this.connect()
+      
       const names_articles = await ArticleModule.find()
       const names: IArticleNames = {
         names: names_articles.map((article) => ({ name: article.name } as IArticleName)),
       }
       return names
-    } finally {
-      await this.disconnect()
+    } catch (error) {
+      console.log(error)
     }
   }
 
-  async AddStreet({ article }: IArticle) {
+  async AddStreet(article: any) {
     try {
-      await this.connect()
       await ArticleModule.create({ _id: article._id, name: article.name, map_url: article.map_url, text: article.text })
-    } finally {
-      await this.disconnect()
+    } catch (error) {
+      console.log(error)
     }
   }
 
-  async EditStreet({ article }: IArticle) {
+  async EditStreet(article: any) {
     try {
-      await this.connect()
-      await ArticleModule.updateOne({ _id: article._id }, { name: article.name, text: article.text, map_url: article.map_url })
-    } finally {
-      await this.disconnect()
+      await ArticleModule.findOneAndUpdate({ _id: article._id }, { name: article.name, text: article.text, map_url: article.map_url })
+    } catch (error) {
+      console.log(error)
     }
   }
 
-  async DeleteStreet({ article }: IArticle) {
+  async DeleteStreet({article}: IArticle) {
     try {
-      await this.connect()
-      await ArticleModule.deleteOne({ _id: article._id })
+      await ArticleModule.findOneAndDelete({ _id: article._id })
       await this.DeleteImage(article._id)
-    } finally {
-      await this.disconnect()
+    } catch (error) {
+      console.log(error)
     }
   }
 }

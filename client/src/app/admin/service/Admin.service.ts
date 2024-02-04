@@ -3,15 +3,15 @@ import { IAdmin } from "../interface/Admin.interface"
 import { IArticleAll, IArticle } from "@/interface/Article.interface"
 
 class AdminService {
-    private URL = 'http://localhost:8800'
+    private URL = 'https://memory-guid-server.vercel.app/'
 
     async SignIn(admin: IAdmin) {
         const { data } = await axios.post(this.URL + '/admin', admin)
         return data
     }
 
-    async GetArticle(_id: string): Promise<IArticle> {
-        const { data } = await axios.get<IArticle>(this.URL + `/street/${_id}`)
+    async GetArticle(name: string): Promise<IArticle> {
+        const { data } = await axios.get<IArticle>(this.URL + `street/${name}`)
         if (data) {
             return data
         } else {

@@ -2,8 +2,7 @@ export interface IArticle {
   article: {
     _id: string,
     name: string,
-    image_street: string[],
-    image_hero: string[],
+    image_hero: string,
     map_url: string,
     text: string[],
   }

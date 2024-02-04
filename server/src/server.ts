@@ -23,11 +23,12 @@ const storage = multer.diskStorage({
     cb(null, dir)
   },
   filename: (req, file, cb) => {
-    const _id = req.body._id
-    const ext = path.extname(file.originalname)
-    const filename = `${_id}${ext}`
-    cb(null, filename)
-    
+    const _id = req.query._id
+    if (_id) {
+      const ext = path.extname(file.originalname)
+      const filename = `${_id}${ext}`
+      cb(null, filename)
+    }
   },
 })
 
@@ -39,24 +40,14 @@ app.post('/admin', (req: Request, res: Response) => {
 
 app.post('/edit', upload.single('image'), async (req: Request, res: Response) => {
   const data = req.body
-
-  if (!req.files) {
-    console.log('error')
-    return res.status(400).send('No files uploaded.')
-  }
-
   await mongodb.EditStreet(data)
+  res.status(200).send("Successfully")
 })
 
 app.post('/add', upload.single('image'), async (req: Request, res: Response) => {
   const data = req.body
-
-  if (!req.files) {
-    console.log('error')
-    return res.status(400).send('No files uploaded.')
-  }
-
   await mongodb.AddStreet(data)
+  res.status(200).send("Successfully")
 })
 
 app.post('/delete', async (req: Request, res: Response) => {
@@ -84,7 +75,7 @@ app.get('/all_article', async (req: Request, res: Response) => {
 
 app.get('/image/:_id', (req: Request, res: Response) => {
   const _id = req.params._id
-  const supportedFormats = ['webp', 'png', 'jpg']
+  const supportedFormats = ['webp', 'png', 'jpg', 'jpeg']
   const dir = path.join('src', 'images')
   const files = fs.readdirSync(dir)
   const file = files.find(name => {
@@ -96,7 +87,7 @@ app.get('/image/:_id', (req: Request, res: Response) => {
     return false
   })
   if (!!file) {
-    res.sendFile(file)
+    res.sendFile(`${__dirname}/images/${file}`)
   } else {
     res.send({ error: '404' })
   }
@@ -109,5 +100,18 @@ app.get('/street/:_id', async (req: Request, res: Response) => {
 })
 
 app.listen(PORT, async () => {
+  await mongodb.connect()
   console.log(`http://localhost:${PORT}`)
+})
+
+process.on('SIGINT', async () => {
+  console.log('Received SIGINT. Closing MongoDB connection and exiting...')
+  await mongodb.disconnect()
+  process.exit(0)
+})
+
+process.on('SIGTERM', async () => {
+  console.log('Received SIGTERM. Closing MongoDB connection and exiting...')
+  await mongodb.disconnect()
+  process.exit(0)
 })

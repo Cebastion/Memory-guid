@@ -75,10 +75,6 @@ line-height: normal;
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
-  img{
-    height: 200px;
-    width: 150px;
-  }
   &:last-child{
     margin-bottom: 0;
   }
@@ -99,13 +95,15 @@ line-height: normal;
 }
 
 .add_img_block{
-  height: 200px;
-  width: 150px;
+  height: 300px;
+  width: 100%;
   background-color: #000;
   border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-size: cover;
+  background-position: center;
   span{
     color: #FFF;
         font-family: Judson;
@@ -118,9 +116,9 @@ line-height: normal;
 
 .form__row{
   width: 100%;
-  display: flex;
-  align-items: center;
-  overflow-x: scroll;
+  label{
+    width: 100%;  
+  }
 }
 
 .form__label{
