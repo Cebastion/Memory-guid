@@ -6,7 +6,7 @@ class AdminService {
     private URL = 'https://memory-guid-server.vercel.app/'
 
     async SignIn(admin: IAdmin) {
-        const { data } = await axios.post(this.URL + '/admin', admin)
+        const { data } = await axios.post(this.URL + 'admin', admin)
         return data
     }
 
