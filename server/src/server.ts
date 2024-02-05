@@ -114,15 +114,3 @@ app.get('/street/:_id', async (req: Request, res: Response) => {
 app.listen(PORT, async () => {
   console.log(`http://localhost:${PORT}`)
 })
-
-process.on('SIGINT', async () => {
-  console.log('Received SIGINT. Closing MongoDB connection and exiting...')
-  await mongodb.disconnect()
-  process.exit(0)
-})
-
-process.on('SIGTERM', async () => {
-  console.log('Received SIGTERM. Closing MongoDB connection and exiting...')
-  await mongodb.disconnect()
-  process.exit(0)
-})
