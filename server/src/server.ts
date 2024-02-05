@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }))
 // POST
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = path.join('src', 'images')
+    const dir = path.join(__dirname, 'images')
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true })
     }
