@@ -20,7 +20,7 @@ export class MongoDB {
 
   private findImg(_id: string): string {
     const supportedFormats = ['webp', 'png', 'jpg', 'jpeg']
-    const dir = path.join('src', 'images');
+    const dir = path.join(__dirname, 'src', 'images');
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
@@ -40,7 +40,7 @@ export class MongoDB {
 
   private async DeleteImage(_id: string): Promise<void> {
     const supportedFormats = ['webp', 'png', 'jpg', 'jpeg']
-    const files = fs.readdirSync(path.join('src', 'images'))
+    const files = fs.readdirSync(path.join(__dirname, 'src', 'images'))
     const file = files.find(name => {
       for (const format of supportedFormats) {
         if (name.endsWith(`.${format}`) && name.split(`.${format}`)[0] === _id) {
@@ -49,7 +49,7 @@ export class MongoDB {
       }
       return false;
     });
-    const pathImg = path.join('src', 'images', file)
+    const pathImg = path.join(__dirname, 'src', 'images', file)
     console.log(pathImg)
     fs.unlinkSync(pathImg)
   }
