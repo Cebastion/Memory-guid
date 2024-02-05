@@ -8,8 +8,6 @@
     }
   ],
   "routes": [
-    { "src": "/images/(.*)", "dest": "/public/images/$1" },
-    { "source": "/images/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, must-revalidate" }] },
     {
       "src": "/(.*)",
       "dest": "src/server.ts",
@@ -20,6 +18,8 @@
         "Access-Control-Allow-Methods": "GET,OPTIONS,PATCH,DELETE,POST,PUT",
         "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
       }
-    }
+    },
+    { "src": "/images/(.*)", "dest": "/public/images/$1" },
+    { "source": "/images/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, must-revalidate" }] }
   ]
 }
