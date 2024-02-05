@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }))
 // POST
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = path.join(__dirname, 'images')
+    const dir = path.join(__dirname, '..', 'public', 'images')
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true })
     }
@@ -86,7 +86,7 @@ app.get('/all_article', async (req: Request, res: Response) => {
 app.get('/image/:_id', (req: Request, res: Response) => {
   const _id = req.params._id
   const supportedFormats = ['webp', 'png', 'jpg', 'jpeg']
-  const dir = path.join(__dirname, 'images')
+  const dir = path.join(__dirname, '..', 'public', 'images')
   console.log(dir)
   const files = fs.readdirSync(dir)
   const file = files.find(name => {
@@ -97,8 +97,9 @@ app.get('/image/:_id', (req: Request, res: Response) => {
     }
     return false
   })
+  const dirFile = path.join(__dirname, '..', 'public', 'images', file)
   if (!!file) {
-    res.sendFile(`${__dirname}/images/${file}`)
+    res.sendFile(dirFile)
   } else {
     res.send({ error: '404' })
   }

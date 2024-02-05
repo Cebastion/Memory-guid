@@ -8,6 +8,8 @@
     }
   ],
   "routes": [
+    { "src": "/images/(.*)", "dest": "/public/images/$1" },
+    { "source": "/images/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, must-revalidate" }] },
     {
       "src": "/(.*)",
       "dest": "src/server.ts",
