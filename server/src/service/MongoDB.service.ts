@@ -20,7 +20,8 @@ export class MongoDB {
 
   private findImg(_id: string): string {
     const supportedFormats = ['webp', 'png', 'jpg', 'jpeg']
-    const dir = path.join(__dirname, 'src', 'images');
+    const dir = path.join(__dirname, '..', 'images');
+    console.log(dir)
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
@@ -49,7 +50,7 @@ export class MongoDB {
       }
       return false;
     });
-    const pathImg = path.join(__dirname, 'src', 'images', file)
+    const pathImg = path.join(__dirname, '..', 'images', file)
     console.log(pathImg)
     fs.unlinkSync(pathImg)
   }

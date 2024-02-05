@@ -86,7 +86,8 @@ app.get('/all_article', async (req: Request, res: Response) => {
 app.get('/image/:_id', (req: Request, res: Response) => {
   const _id = req.params._id
   const supportedFormats = ['webp', 'png', 'jpg', 'jpeg']
-  const dir = path.join('src', 'images')
+  const dir = path.join(__dirname, 'images')
+  console.log(dir)
   const files = fs.readdirSync(dir)
   const file = files.find(name => {
     for (const format of supportedFormats) {
