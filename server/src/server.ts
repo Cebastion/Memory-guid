@@ -39,21 +39,27 @@ app.post('/admin', (req: Request, res: Response) => {
 })
 
 app.post('/edit', upload.single('image'), async (req: Request, res: Response) => {
+  await mongodb.connect()
   const data = req.body
   await mongodb.EditStreet(data)
+  await mongodb.disconnect()
   res.status(200).send("Successfully")
 })
 
 app.post('/add', upload.single('image'), async (req: Request, res: Response) => {
+  await mongodb.connect()
   const data = req.body
   await mongodb.AddStreet(data)
+  await mongodb.disconnect()
   res.status(200).send("Successfully")
 })
 
 app.post('/delete', async (req: Request, res: Response) => {
+  await mongodb.connect()
   const data = req.body
   await mongodb.DeleteStreet(data)
   const articles = await mongodb.articles()
+  await mongodb.disconnect()
   res.json(articles)
 })
 
@@ -64,12 +70,16 @@ app.get('/', async (req: Request, res: Response) => {
 })
 
 app.get('/names_streets', async (req: Request, res: Response) => {
+  await mongodb.connect()
   const names = await mongodb.namesArticles()
+  await mongodb.disconnect()
   res.json(names)
 })
 
 app.get('/all_article', async (req: Request, res: Response) => {
+  await mongodb.connect()
   const articles = await mongodb.articles()
+  await mongodb.disconnect()
   res.json(articles)
 })
 
@@ -95,12 +105,13 @@ app.get('/image/:_id', (req: Request, res: Response) => {
 
 app.get('/street/:_id', async (req: Request, res: Response) => {
   const _id = req.params._id
+  await mongodb.connect()
   const article = await mongodb.article(_id)
+  await mongodb.disconnect()
   res.json(article)
 })
 
 app.listen(PORT, async () => {
-  await mongodb.connect()
   console.log(`http://localhost:${PORT}`)
 })
 
